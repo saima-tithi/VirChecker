@@ -950,16 +950,29 @@ public class VirChecker {
     private static void runAlignmentGetCoverage() {
         String cmd = "";
         try {
-            cmd = "cd " + outputDir + "\n" 
+            if (read2.isEmpty()) {
+                cmd = "cd " + outputDir + "\n" 
                     + "rm -r bowtie2*\n"
                     + "rm -r samtools*\n"
                     + "bowtie2-build scaffold.fasta bowtie2-index\n"
                     + "bowtie2 -x bowtie2-index "
-                    + "-1 " + read1
-                    + " -2 " + read2
+                    + "-U " + read1
                     + " | samtools view -bS - | samtools view -h -F 0x04 -b - | "
                     + "samtools sort - -o bowtie2-mapped.bam\n"
                     + "samtools depth -a bowtie2-mapped.bam > samtools-coverage.txt\n";
+            }
+            else {
+                cmd = "cd " + outputDir + "\n" 
+                        + "rm -r bowtie2*\n"
+                        + "rm -r samtools*\n"
+                        + "bowtie2-build scaffold.fasta bowtie2-index\n"
+                        + "bowtie2 -x bowtie2-index "
+                        + "-1 " + read1
+                        + " -2 " + read2
+                        + " | samtools view -bS - | samtools view -h -F 0x04 -b - | "
+                        + "samtools sort - -o bowtie2-mapped.bam\n"
+                        + "samtools depth -a bowtie2-mapped.bam > samtools-coverage.txt\n";
+            }
 
             FileWriter shellFileWriter = new FileWriter(outputDir + "/run.sh");
             shellFileWriter.write("#!/bin/bash\n");
